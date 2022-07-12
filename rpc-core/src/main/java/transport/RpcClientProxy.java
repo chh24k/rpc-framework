@@ -1,8 +1,8 @@
-package utils;
+package transport;
 
 import entity.RpcRequest;
 import entity.RpcResponse;
-import model.RpcClient;
+import transport.socket.client.SocketClient;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -42,7 +42,7 @@ public class RpcClientProxy implements InvocationHandler {
                 .parameters(args)
                 .paramTypes(method.getParameterTypes())
                 .build();
-        RpcClient rpcClient = new RpcClient();
-        return ((RpcResponse) rpcClient.sendRequest(rpcRequest, host, port)).getData();
+        SocketClient socketClient = new SocketClient();
+        return ((RpcResponse) socketClient.sendRequest(rpcRequest, host, port)).getData();
     }
 }

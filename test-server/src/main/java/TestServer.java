@@ -1,7 +1,7 @@
 
-import model.RpcServer;
-import registry.DefaultServiceRegistry;
-import registry.ServiceRegistry;
+import transport.socket.server.SocketServer;
+import registry.ScratchDefaultScratchServiceRegistry;
+import registry.ScratchServiceRegistry;
 
 
 /**
@@ -13,9 +13,9 @@ import registry.ServiceRegistry;
 public class TestServer {
     public static void main(String[] args) {
         HelloService helloService = new HelloServiceImpl();
-        ServiceRegistry serviceRegistry = new DefaultServiceRegistry();
-        serviceRegistry.register(helloService);
-        RpcServer rpcServer = new RpcServer(serviceRegistry);
-        rpcServer.start(9001);
+        ScratchServiceRegistry scratchServiceRegistry = new ScratchDefaultScratchServiceRegistry();
+        scratchServiceRegistry.register(helloService);
+        SocketServer socketServer = new SocketServer(scratchServiceRegistry);
+        socketServer.start(9001);
     }
 }

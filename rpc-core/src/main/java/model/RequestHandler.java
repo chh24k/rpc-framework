@@ -1,6 +1,8 @@
 package model;
 
 import entity.RpcRequest;
+import entity.RpcResponse;
+import enumeration.ResponseCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,16 +19,23 @@ public class RequestHandler {
 
     public static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
+    /**
+    *@Description: 在catch处返回fail
+    *@Param:
+    *@return: 
+    *@Author: hong hui
+    *@date: 
+    */
     public Object handle(Object service, RpcRequest rpcRequest) {
-        String methodName = rpcRequest.getMethodName();
+        Object result;
         logger.info("进入handler");
         try {
-            Method method = service.getClass().getMethod(methodName, rpcRequest.getParamTypes());
-            Object result = method.invoke(service, rpcRequest.getParameters());
-            return result;
+            Method method = service.getClass().getMethod(rpcRequest.getMethodName(), rpcRequest.getParamTypes());
+            result = method.invoke(service, rpcRequest.getParameters());
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             logger.error("处理器错误：" + e);
-            return null;
+            return RpcResponse.fail(ResponseCode.METHOD_NOT_FOUND);
         }
+        return result;
     }
 }
