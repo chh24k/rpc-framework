@@ -10,7 +10,9 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum ResponseCode {
+    //
     success(200,"OK"),
+    //
     METHOD_NOT_FOUND(301, "未找到方法");
 
 
