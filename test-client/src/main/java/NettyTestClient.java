@@ -10,7 +10,7 @@ import transport.netty.client.NettyClient;
 public class NettyTestClient {
 
     public static void main(String[] args) {
-        NettyClient client = new NettyClient("127.0.0.1", 10001);
+        NettyClient client = new NettyClient();
         RpcClientProxy rpcClientProxy = new RpcClientProxy(client);
         HelloService helloService = rpcClientProxy.getProxy(HelloService.class);
         HelloObject object = new HelloObject(12, "This is a message");

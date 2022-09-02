@@ -1,7 +1,7 @@
 
 import transport.socket.server.SocketServer;
-import registry.DefaultScratchServiceRegistry;
-import registry.ScratchServiceRegistry;
+import provider.DefaultServiceProvider;
+import provider.ServiceProvider;
 
 
 /**
@@ -13,9 +13,9 @@ import registry.ScratchServiceRegistry;
 public class TestServer {
     public static void main(String[] args) {
         HelloService helloService = new HelloServiceImpl();
-        ScratchServiceRegistry scratchServiceRegistry = new DefaultScratchServiceRegistry();
-        scratchServiceRegistry.register(helloService);
-        SocketServer socketServer = new SocketServer(scratchServiceRegistry);
-        socketServer.start(9001);
+        ServiceProvider serviceProvider = new DefaultServiceProvider();
+        serviceProvider.addServiceProvider(helloService);
+        SocketServer socketServer = new SocketServer(serviceProvider, 9001);
+        socketServer.start();
     }
 }

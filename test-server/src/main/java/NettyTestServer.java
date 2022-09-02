@@ -1,5 +1,5 @@
-import registry.DefaultScratchServiceRegistry;
-import registry.ScratchServiceRegistry;
+import provider.DefaultServiceProvider;
+import provider.ServiceProvider;
 import transport.netty.server.NettyServer;
 
 /**
@@ -11,10 +11,9 @@ import transport.netty.server.NettyServer;
 public class NettyTestServer {
 
     public static void main(String[] args) {
-        HelloServiceImpl helloService = new HelloServiceImpl();
-        ScratchServiceRegistry registry = new DefaultScratchServiceRegistry();
-        registry.register(helloService);
-        NettyServer server = new NettyServer();
-        server.start(10001);
+        HelloService helloService = new HelloServiceImpl();
+        NettyServer server = new NettyServer("127.0.0.1", 10001);
+        server.publishService(helloService, HelloService.class);
+//        server.start(10001);
     }
 }
