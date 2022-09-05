@@ -34,7 +34,7 @@ public class RequestHandler {
             result = method.invoke(service, rpcRequest.getParameters());
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             logger.error("处理器错误：" + e);
-            return RpcResponse.fail(ResponseCode.METHOD_NOT_FOUND);
+            return RpcResponse.fail(ResponseCode.METHOD_NOT_FOUND, rpcRequest.getRequestId());
         }
         return result;
     }

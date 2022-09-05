@@ -5,6 +5,10 @@ import balance.RoundRobinLoadBalancer;
 import code.*;
 import entity.RpcRequest;
 import entity.RpcResponse;
+import enumeration.RpcError;
+import exception.RpcException;
+import factory.SingletonFactory;
+import factory.ThreadPoolFactory;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -22,6 +26,7 @@ import serializer.KryoSerializer;
 import transport.RpcClient;
 
 import java.net.InetSocketAddress;
+import java.util.concurrent.CompletableFuture;
 
 
 /**
@@ -39,6 +44,8 @@ public class NettyClient implements RpcClient {
     private final ServiceDiscovery serviceDiscovery;
     private final CommonSerializer serializer;
 
+    private final UnprocessedRequests unprocessedRequests;
+
     public NettyClient() {
         this(DEFAULT_SERIALIZER, new RoundRobinLoadBalancer());
     }
@@ -54,49 +61,45 @@ public class NettyClient implements RpcClient {
     public NettyClient(Integer serializer, LoadBalancer loadBalancer) {
         this.serviceDiscovery = new NacosServiceDiscovery(loadBalancer);
         this.serializer = CommonSerializer.getByCode(serializer);
+        this.unprocessedRequests = SingletonFactory.getInstance(UnprocessedRequests.class);
     }
 
     static {
         group = new NioEventLoopGroup();
         bootstrap = new Bootstrap();
         bootstrap.group(group)
-                .channel(NioSocketChannel.class)
-                .option(ChannelOption.SO_KEEPALIVE, true)
-                .handler(new ChannelInitializer<SocketChannel>() {
-                    @Override
-                    protected void initChannel(SocketChannel socketChannel) throws Exception {
-                        ChannelPipeline pipeline = socketChannel.pipeline();
-                        pipeline.addLast(new CommonDecoder());
-                        pipeline.addLast(new CommonEncoder(new KryoSerializer()));
-                        pipeline.addLast(new NettyClientHandler());
-                    }
-                });
+                .channel(NioSocketChannel.class);
     }
 
     @Override
-    public Object sendRequest(RpcRequest rpcRequest) {
+    public CompletableFuture<RpcResponse> sendRequest(RpcRequest rpcRequest) {
+        if (serializer == null) {
+            logger.error("未设置序列化器");
+            throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
+        }
+        CompletableFuture<RpcResponse> resultFuture = new CompletableFuture<>();
         try {
             InetSocketAddress inetSocketAddress = serviceDiscovery.lookupService(rpcRequest.getInterfaceName());
-            ChannelFuture future = bootstrap.connect(inetSocketAddress.getHostName(), inetSocketAddress.getPort()).sync();
-            logger.info("客户端连接到服务器{}：{}", inetSocketAddress.getHostName(), inetSocketAddress.getPort());
-            Channel channel = future.channel();
-            if(channel != null) {
-                channel.writeAndFlush(rpcRequest).addListener(future1 -> {
-                    if(future1.isSuccess()) {
-                        logger.info(String.format("客户端发送消息：%s", rpcRequest.toString()));
-                    } else {
-                        logger.error("发送消息时有错误发生：", future1.cause());
-                    }
-                });
-                channel.closeFuture().sync();
-                AttributeKey<RpcResponse> key = AttributeKey.valueOf("rpcResponse");
-                RpcResponse rpcResponse = channel.attr(key).get();
-                return rpcResponse.getData();
+            Channel channel = ChannelProvider.get(inetSocketAddress, serializer);
+            if (!channel.isActive()) {
+                group.shutdownGracefully();
+                return null;
             }
+            unprocessedRequests.put(rpcRequest.getRequestId(), resultFuture);
+            channel.writeAndFlush(rpcRequest).addListener((ChannelFutureListener) future1 -> {
+                if (future1.isSuccess()) {
+                    logger.info(String.format("客户端发送消息：%s", rpcRequest.toString()));
+                } else {
+                    future1.channel().close();
+                    resultFuture.completeExceptionally(future1.cause());
+                    logger.error("发送消息时有错误发生：", future1.cause());
+                }
+            });
         } catch (InterruptedException e) {
-            logger.error("同步任务异常");
-            e.printStackTrace();
+            unprocessedRequests.remove(rpcRequest.getRequestId());
+            logger.error(e.getMessage(), e);
+            Thread.currentThread().interrupt();
         }
-        return null;
+        return resultFuture;
     }
 }

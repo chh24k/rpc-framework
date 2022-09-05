@@ -1,7 +1,8 @@
+import api.EndService;
+import api.HelloObject;
+import api.HelloService;
 import transport.RpcClientProxy;
 import transport.netty.client.NettyClient;
-
-import java.util.Arrays;
 
 /**
  * @program: rpc-framework
@@ -18,5 +19,7 @@ public class NettyTestClient {
         HelloObject object = new HelloObject(12, "This is a message");
         String res = helloService.hello(object);
         System.out.println(res);
+        EndService endService = rpcClientProxy.getProxy(EndService.class);
+        System.out.println(endService.end("client chh"));
     }
 }

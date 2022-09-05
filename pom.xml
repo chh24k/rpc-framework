@@ -23,6 +23,7 @@
         <jackson.version>2.9.0</jackson.version>
         <kryo.version>4.0.2</kryo.version>
         <nacos.version>1.3.0</nacos.version>
+        <guava.version>29.0-jre</guava.version>
     </properties>
 
     <dependencies>

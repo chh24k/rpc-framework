@@ -1,4 +1,6 @@
+package com.whu.rpc.servertest;
 
+import api.HelloService;
 import transport.socket.server.SocketServer;
 import provider.DefaultServiceProvider;
 import provider.ServiceProvider;

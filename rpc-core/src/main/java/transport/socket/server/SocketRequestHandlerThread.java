@@ -39,7 +39,7 @@ public class SocketRequestHandlerThread implements Runnable{
             RpcRequest rpcRequest = (RpcRequest) in.readObject();
             Object service = serviceProvider.getServiceProvider(rpcRequest.getInterfaceName());
             Object result = handler.handle(service, rpcRequest);
-            out.writeObject(RpcResponse.success(result));
+            out.writeObject(RpcResponse.success(result, rpcRequest.getRequestId()));
             out.flush();
             logger.info("worker正常运行");
         } catch (IOException | ClassNotFoundException e) {

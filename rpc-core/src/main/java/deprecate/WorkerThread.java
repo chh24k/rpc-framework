@@ -35,7 +35,7 @@ public class WorkerThread implements Runnable{
             RpcRequest rpcRequest = (RpcRequest) in.readObject();
             Method method = service.getClass().getMethod(rpcRequest.getMethodName(), rpcRequest.getParamTypes());
             Object result = method.invoke(service, rpcRequest.getParameters());
-            out.writeObject(RpcResponse.success(result));
+            out.writeObject(RpcResponse.success(result, rpcRequest.getRequestId()));
             out.flush();
         } catch (Exception e) {
             logger.error("worker线程调用时出错", e);

@@ -1,3 +1,5 @@
+import api.HelloObject;
+import api.HelloService;
 import transport.RpcClient;
 import transport.RpcClientProxy;
 import transport.socket.client.SocketClient;

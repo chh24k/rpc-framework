@@ -42,7 +42,7 @@ public class NettyServer extends AbstractRpcServer {
         serviceProvider = new DefaultServiceProvider();
         serviceRegistry = new NacosServiceRegistry();
         this.serializer = CommonSerializer.getByCode(serializer);
-//        scanServices();
+        scanServices();
     }
 
 

@@ -17,3 +17,5 @@ socket实现：
 - 解耦rpcserver 持有服务注册表的引用 
   让worker线程持有注册表 
   将反射抽象到handler里调用
+  
+java类最好放在包中
