@@ -1,4 +1,4 @@
-package code;
+package serializer;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
@@ -47,8 +47,7 @@ public class KryoSerializer implements CommonSerializer{
             return output.toBytes();
         } catch (Exception e) {
             logger.error("序列化时有错误发生:", e);
-//            throw new SerializeException("序列化时有错误发生");
-            return null;
+            throw new SerializeException("序列化时有错误发生");
         }
 
     }
@@ -63,8 +62,7 @@ public class KryoSerializer implements CommonSerializer{
             return o;
         } catch (Exception e) {
             logger.error("反序列化时有错误发生:", e);
-//            throw new SerializeException("反序列化时有错误发生");
-            return null;
+            throw new SerializeException("反序列化时有错误发生");
         }
     }
 }

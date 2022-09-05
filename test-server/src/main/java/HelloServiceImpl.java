@@ -1,3 +1,4 @@
+import anno.RpcService;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -7,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
  * @create: 2022/05/15 17:58
  */
 @Slf4j
+@RpcService
 public class HelloServiceImpl implements HelloService {
     @Override
     public String hello(HelloObject object) {

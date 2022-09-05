@@ -4,7 +4,7 @@ import entity.RpcRequest;
 import entity.RpcResponse;
 import io.netty.channel.*;
 import io.netty.util.ReferenceCountUtil;
-import model.RequestHandler;
+import handler.RequestHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import provider.DefaultServiceProvider;
@@ -20,11 +20,11 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequest> 
 
     public static final Logger logger = LoggerFactory.getLogger(NettyServerHandler.class);
     private static RequestHandler requestHandler;
-    private static ServiceProvider serviceRegistry;
+    private static ServiceProvider serviceProvider;
 
     static {
         requestHandler = new RequestHandler();
-        serviceRegistry = new DefaultServiceProvider();
+        serviceProvider = new DefaultServiceProvider();
     }
 
 
@@ -33,7 +33,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequest> 
         try {
             logger.info("服务器接收到请求：{}", rpcRequest);
             String interfaceName = rpcRequest.getInterfaceName();
-            Object service = serviceRegistry.getServiceProvider(interfaceName);
+            Object service = serviceProvider.getServiceProvider(interfaceName);
             Object result = requestHandler.handle(service, rpcRequest);
             ChannelFuture future = channelHandlerContext.writeAndFlush(RpcResponse.success(result));
             future.addListener(ChannelFutureListener.CLOSE);

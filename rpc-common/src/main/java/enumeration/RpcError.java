@@ -15,7 +15,9 @@ public enum RpcError {
     FAILED_TO_CONNECT_TO_SERVICE_REGISTRY("连接注册中心异常"),
     REGISTER_SERVICE_FAILED("注册失败"),
     FAILED_TO_FIND_SERVICE("获取服务失败"),
-    SERIALIZER_NOT_FOUND("未找到序列化器")
+    SERIALIZER_NOT_FOUND("未找到序列化器"),
+    SERVICE_SCAN_PACKAGE_NOT_FOUND("SERVICE_SCAN_PACKAGE_NOT_FOUND"),
+    UNKNOWN_ERROR("UNKNOWN_ERROR")
     ;
 
     private final String message;

@@ -10,6 +10,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ReplayingDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import serializer.CommonSerializer;
 
 import java.util.List;
 
@@ -23,7 +24,6 @@ public class CommonDecoder extends ReplayingDecoder {
 
     public static final Logger logger = LoggerFactory.getLogger(CommonDecoder.class);
     public static final int MAGIC_NUMBER = 0xCAFEBABE;
-
 
     @Override
     protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) throws Exception {

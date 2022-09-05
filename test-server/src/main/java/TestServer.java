@@ -14,7 +14,7 @@ public class TestServer {
     public static void main(String[] args) {
         HelloService helloService = new HelloServiceImpl();
         ServiceProvider serviceProvider = new DefaultServiceProvider();
-        serviceProvider.addServiceProvider(helloService);
+        serviceProvider.addServiceProvider(helloService, helloService.getClass().getName());
         SocketServer socketServer = new SocketServer(serviceProvider, 9001);
         socketServer.start();
     }
